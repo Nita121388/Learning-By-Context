@@ -30,3 +30,6 @@ coverage/
 Thumbs.db
 .idea/
 .vscode/
+
+# 项目输出临时文件
+download-UI_GENERATION (1)/
