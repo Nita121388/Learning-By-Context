@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字幕智析 - 字幕处理</title>
+    <script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+    <script src="https://unpkg.byted-static.com/fortawesome/fontawesome-free/6.7.2/js/all.min.js" data-auto-replace-svg="nest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                        tertiary: '#06b6d4',
+                        success: '#10b981',
+                        danger: '#ef4444',
+                        warning: '#f59e0b',
+                        info: '#3b82f6',
+                        'glass-bg': 'rgba(255, 255, 255, 0.1)',
+                        'glass-border': 'rgba(255, 255, 255, 0.2)',
+                        'dark-bg': '#0f0f23',
+                        'dark-card': '#1a1a2e',
+                        'dark-surface': '#16213e'
+                    },
+                    backdropBlur: {
+                        'xs': '2px',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .glass-nav {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-sidebar {
+            background: rgba(26, 26, 46, 0.9);
+            backdrop-filter: blur(15px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-button {
+            background: rgba(99, 102, 241, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-button:hover {
+            background: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        }
+        
+        .glass-button:disabled {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .glass-input {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+        
+        .sidebar-item {
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .sidebar-item.active {
+            background: rgba(99, 102, 241, 0.2);
+            border-right: 3px solid #6366f1;
+        }
+        
+        .block-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .block-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.2);
+        }
+        
+        .block-card.selected {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
+        }
+        
+        .progress-bar {
+            background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            transition: width 0.3s ease;
+        }
+        
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #6366f1;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="text-white font-sans">
+    <!-- 顶部导航栏 -->
+    <nav id="top-nav" class="glass-nav fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-6 z-50">
+        <div id="nav-left" class="flex items-center space-x-4">
+            <div id="logo" class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                    <i class="fas fa-language text-white text-lg"></i>
+                </div>
+                <span class="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">字幕智析</span>
+            </div>
+        </div>
+        
+        <div id="nav-center" class="flex-1 max-w-md mx-8">
+            <div class="relative">
+                <input 
+                    type="text" 
+                    id="global-search" 
+                    placeholder="搜索学习内容..." 
+                    class="w-full px-4 py-2 pl-10 rounded-xl glass-input text-white placeholder-gray-300 focus:outline-none"
+                >
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300"></i>
+            </div>
+        </div>
+        
+        <div id="nav-right" class="flex items-center space-x-4">
+            <button id="notification-btn" class="relative p-2 rounded-lg glass-button">
+                <i class="fas fa-bell text-white"></i>
+                <span class="absolute -top-1 -right-1 w-3 h-3 bg-danger rounded-full"></span>
+            </button>
+            <div id="user-menu" class="relative">
+                <button id="user-avatar" class="flex items-center space-x-2 p-2 rounded-lg glass-button">
+                    <img src="https://s.coze.cn/image/aX8v3QpeqG4/" 
+                         alt="用户头像" 
+                         class="w-8 h-8 rounded-full"
+                         data-category="人物">
+                    <span class="text-white">学习者</span>
+                    <i class="fas fa-chevron-down text-gray-300 text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 左侧菜单 -->
+    <aside id="sidebar" class="glass-sidebar fixed left-0 top-16 bottom-0 w-64 z-40 transition-all duration-300">
+        <div id="sidebar-content" class="p-4">
+            <nav id="sidebar-nav" class="space-y-2">
+                <a href="P-HOME.html" id="nav-home" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:text-white">
+                    <i class="fas fa-home text-lg"></i>
+                    <span class="font-medium">首页</span>
+                </a>
+                <a href="#" id="nav-subtitle" class="sidebar-item active flex items-center space-x-3 px-4 py-3 rounded-xl text-white">
+                    <i class="fas fa-file-alt text-lg"></i>
+                    <span class="font-medium">字幕处理</span>
+                </a>
+                <a href="P-LEARNING_RECORD.html" id="nav-record" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:text-white">
+                    <i class="fas fa-chart-line text-lg"></i>
+                    <span class="font-medium">学习记录</span>
+                </a>
+                <a href="P-NOTE_MANAGE.html" id="nav-notes" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:text-white">
+                    <i class="fas fa-sticky-note text-lg"></i>
+                    <span class="font-medium">笔记管理</span>
+                </a>
+                <a href="P-SETTINGS.html" id="nav-settings" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:text-white">
+                    <i class="fas fa-cog text-lg"></i>
+                    <span class="font-medium">个人设置</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main id="main-content" class="ml-64 mt-16 p-6 min-h-screen">
+        <!-- 页面头部 -->
+        <header id="page-header" class="mb-8">
+            <div id="breadcrumb" class="text-sm text-gray-400 mb-2">
+                <a href="P-HOME.html" class="hover:text-primary">首页</a>
+                <span class="mx-2">></span>
+                <span>字幕处理</span>
+            </div>
+            <div id="page-title-section" class="flex items-center justify-between">
+                <div>
+                    <h1 id="page-title" class="text-3xl font-bold text-white mb-2">字幕处理</h1>
+                    <p id="page-subtitle" class="text-gray-300">粘贴字幕文本，AI将智能分块并生成学习内容</p>
+                </div>
+                <div id="help-widget" class="glass-card rounded-xl p-4 text-center">
+                    <div class="text-xl mb-1">❓</div>
+                    <div class="text-sm text-gray-300">需要帮助？</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 文本输入区 -->
+        <section id="text-input-section" class="mb-8">
+            <div id="input-card" class="glass-card rounded-xl p-6">
+                <div id="input-header" class="flex items-center justify-between mb-4">
+                    <h2 id="input-title" class="text-xl font-semibold text-white">输入字幕文本</h2>
+                    <div id="input-tips" class="flex items-center space-x-2 text-sm text-gray-400">
+                        <i class="fas fa-info-circle"></i>
+                        <span>支持SRT、ASS等格式</span>
+                    </div>
+                </div>
+                
+                <!-- 拖拽上传区域 -->
+                <div id="drag-drop-area" class="mb-4 border-2 border-dashed border-gray-600 rounded-xl p-8 text-center hover:border-primary transition-colors cursor-pointer">
+                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                    <p class="text-gray-300 mb-2">拖拽文件到此处上传，或</p>
+                    <label for="file-upload" class="text-primary hover:text-secondary cursor-pointer">
+                        <i class="fas fa-file-upload mr-1"></i>选择文件上传
+                    </label>
+                    <input type="file" id="file-upload" class="hidden" multiple accept=".srt,.ass,.txt">
+                    <p class="text-xs text-gray-400 mt-2">支持多个文件同时上传</p>
+                </div>
+                
+                <div id="input-area" class="mb-4">
+                    <textarea 
+                        id="subtitle-textarea" 
+                        placeholder="或者粘贴字幕文本到这里..."
+                        class="w-full h-48 px-4 py-3 rounded-xl glass-input text-white placeholder-gray-300 focus:outline-none resize-none"
+                    ></textarea>
+                </div>
+                
+                <div id="input-actions" class="flex items-center justify-between">
+                    <div id="input-stats" class="text-sm text-gray-400">
+                        <span id="char-count">0</span> 字符 | 
+                        <span id="line-count">0</span> 行
+                    </div>
+                    <div id="input-buttons" class="flex items-center space-x-3">
+                        <button id="clear-text-btn" class="px-4 py-2 rounded-lg glass-button text-white hover:bg-white hover:bg-opacity-20 transition-colors">
+                            <i class="fas fa-trash-alt mr-2"></i>清空
+                        </button>
+                        <button id="start-process-btn" class="px-6 py-2 rounded-lg bg-gradient-to-r from-primary to-secondary text-white font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i class="fas fa-magic mr-2"></i>开始分块
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 处理进度指示区 -->
+        <section id="progress-section" class="mb-8 hidden">
+            <div id="progress-card" class="glass-card rounded-xl p-6">
+                <div id="progress-header" class="flex items-center justify-between mb-4">
+                    <h2 id="progress-title" class="text-xl font-semibold text-white">AI正在处理</h2>
+                    <div id="progress-spinner" class="loading-spinner"></div>
+                </div>
+                
+                <div id="progress-bar-container" class="mb-4">
+                    <div class="w-full bg-gray-700 rounded-full h-3">
+                        <div id="progress-bar" class="progress-bar h-3 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div id="progress-status" class="text-center">
+                    <p id="progress-text" class="text-gray-300">正在分析字幕内容...</p>
+                    <p id="progress-percentage" class="text-primary font-semibold mt-1">0%</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 分块结果展示区 -->
+        <section id="blocks-section" class="mb-8 hidden">
+            <div id="blocks-header" class="flex items-center justify-between mb-4">
+                <h2 id="blocks-title" class="text-xl font-semibold text-white">情景分块结果</h2>
+                <div id="blocks-info" class="text-sm text-gray-400">
+                    共 <span id="total-blocks">0</span> 个情景模块
+                </div>
+            </div>
+            
+            <!-- 分块控制工具栏 -->
+            <div id="blocks-toolbar" class="glass-card rounded-xl p-4 mb-6">
+                <div class="flex items-center justify-between">
+                    <div id="selection-info" class="text-sm text-gray-300">
+                        已选择 <span id="selected-count">0</span> 个模块
+                    </div>
+                    <div id="control-buttons" class="flex items-center space-x-2">
+                        <button id="merge-btn" class="px-3 py-1 rounded-lg glass-button text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fas fa-compress-arrows-alt mr-1"></i>合并
+                        </button>
+                        <button id="split-btn" class="px-3 py-1 rounded-lg glass-button text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fas fa-expand-arrows-alt mr-1"></i>拆分
+                        </button>
+                        <button id="delete-btn" class="px-3 py-1 rounded-lg bg-danger bg-opacity-20 border border-danger border-opacity-30 text-danger text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fas fa-trash mr-1"></i>删除
+                        </button>
+                        <button id="move-up-btn" class="px-3 py-1 rounded-lg glass-button text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fas fa-arrow-up mr-1"></i>上移
+                        </button>
+                        <button id="move-down-btn" class="px-3 py-1 rounded-lg glass-button text-white text-sm disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            <i class="fas fa-arrow-down mr-1"></i>下移
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 分块列表 -->
+            <div id="blocks-list" class="space-y-4">
+                <!-- 分块卡片将通过JavaScript动态生成 -->
+            </div>
+            
+            <!-- 进入学习按钮 -->
+            <div id="start-learning-section" class="mt-8 text-center">
+                <button id="start-learning-btn" class="px-8 py-3 rounded-xl bg-gradient-to-r from-success to-tertiary text-white font-semibold hover:shadow-lg transition-all">
+                    <i class="fas fa-graduation-cap mr-2"></i>开始学习
+                </button>
+            </div>
+        </section>
+
+        <!-- 操作说明区 -->
+        <section id="instructions-section" class="mb-8">
+            <div id="instructions-card" class="glass-card rounded-xl p-6">
+                <h2 id="instructions-title" class="text-xl font-semibold text-white mb-4">
+                    <i class="fas fa-lightbulb text-warning mr-2"></i>使用说明
+                </h2>
+                <div id="instructions-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div id="step-1" class="text-center">
+                        <div class="w-16 h-16 rounded-full bg-primary bg-opacity-20 flex items-center justify-center mx-auto mb-3">
+                            <span class="text-primary font-bold text-xl">1</span>
+                        </div>
+                        <h3 class="font-semibold text-white mb-2">粘贴字幕</h3>
+                        <p class="text-gray-300 text-sm">将字幕文本复制粘贴到输入框中</p>
+                    </div>
+                    
+                    <div id="step-2" class="text-center">
+                        <div class="w-16 h-16 rounded-full bg-secondary bg-opacity-20 flex items-center justify-center mx-auto mb-3">
+                            <span class="text-secondary font-bold text-xl">2</span>
+                        </div>
+                        <h3 class="font-semibold text-white mb-2">AI分块</h3>
+                        <p class="text-gray-300 text-sm">点击"开始分块"，AI将智能分割情景模块</p>
+                    </div>
+                    
+                    <div id="step-3" class="text-center">
+                        <div class="w-16 h-16 rounded-full bg-success bg-opacity-20 flex items-center justify-center mx-auto mb-3">
+                            <span class="text-success font-bold text-xl">3</span>
+                        </div>
+                        <h3 class="font-semibold text-white mb-2">调整优化</h3>
+                        <p class="text-gray-300 text-sm">根据需要调整分块，然后开始学习</p>
+                    </div>
+                </div>
+                
+                <div id="tips-section" class="mt-6 p-4 bg-gray-800 bg-opacity-30 rounded-lg">
+                    <h4 class="font-semibold text-white mb-2">
+                        <i class="fas fa-info-circle text-info mr-2"></i>温馨提示
+                    </h4>
+                    <ul class="text-gray-300 text-sm space-y-1">
+                        <li>• 建议每次处理10-20分钟的字幕内容</li>
+                        <li>• 支持SRT、ASS、纯文本等多种格式</li>
+                        <li>• 分块结果可以手动调整以获得更好的学习体验</li>
+                        <li>• 处理时间取决于字幕长度，通常需要10-30秒</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM元素引用
+            const subtitleTextarea = document.querySelector('#subtitle-textarea');
+            const charCount = document.querySelector('#char-count');
+            const lineCount = document.querySelector('#line-count');
+            const clearTextBtn = document.querySelector('#clear-text-btn');
+            const startProcessBtn = document.querySelector('#start-process-btn');
+            const progressSection = document.querySelector('#progress-section');
+            const blocksSection = document.querySelector('#blocks-section');
+            const progressBar = document.querySelector('#progress-bar');
+            const progressText = document.querySelector('#progress-text');
+            const progressPercentage = document.querySelector('#progress-percentage');
+            const blocksList = document.querySelector('#blocks-list');
+            const totalBlocksSpan = document.querySelector('#total-blocks');
+            const selectedCountSpan = document.querySelector('#selected-count');
+            const mergeBtn = document.querySelector('#merge-btn');
+            const splitBtn = document.querySelector('#split-btn');
+            const deleteBtn = document.querySelector('#delete-btn');
+            const moveUpBtn = document.querySelector('#move-up-btn');
+            const moveDownBtn = document.querySelector('#move-down-btn');
+            const startLearningBtn = document.querySelector('#start-learning-btn');
+            
+            let currentBlocks = [];
+            let selectedBlocks = new Set();
+            let subtitleId = null;
+
+            // 文本输入统计
+            subtitleTextarea.addEventListener('input', function() {
+                const text = this.value;
+                charCount.textContent = text.length;
+                lineCount.textContent = text.split('\n').length;
+                
+                // 启用/禁用开始分块按钮
+                startProcessBtn.disabled = text.length === 0;
+            });
+            
+            // 文件上传处理
+            const fileUpload = document.querySelector('#file-upload');
+            const dragDropArea = document.querySelector('#drag-drop-area');
+            
+            fileUpload.addEventListener('change', function() {
+                handleFiles(this.files);
+            });
+            
+            // 拖拽上传事件
+            dragDropArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('border-primary');
+            });
+            
+            dragDropArea.addEventListener('dragleave', function() {
+                this.classList.remove('border-primary');
+            });
+            
+            dragDropArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('border-primary');
+                
+                if (e.dataTransfer.files.length) {
+                    handleFiles(e.dataTransfer.files);
+                }
+            });
+            
+            // 点击上传区域触发文件选择
+            dragDropArea.addEventListener('click', function() {
+                fileUpload.click();
+            });
+            
+            // 处理上传的文件
+            function handleFiles(files) {
+                let combinedText = subtitleTextarea.value;
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        if (combinedText) {
+                            combinedText += '\n\n'; // 在文件之间添加分隔符
+                        }
+                        combinedText += e.target.result;
+                        
+                        // 更新文本区域内容
+                        subtitleTextarea.value = combinedText;
+                        
+                        // 触发input事件以更新统计信息
+                        const event = new Event('input', { bubbles: true });
+                        subtitleTextarea.dispatchEvent(event);
+                    };
+                    
+                    reader.readAsText(file);
+                }
+            });
+
+            // 清空文本按钮
+            clearTextBtn.addEventListener('click', function() {
+                subtitleTextarea.value = '';
+                charCount.textContent = '0';
+                lineCount.textContent = '0';
+                startProcessBtn.disabled = true;
+                
+                // 隐藏分块结果
+                blocksSection.classList.add('hidden');
+                currentBlocks = [];
+                selectedBlocks.clear();
+                updateBlockSelection();
+            });
+
+            // 开始分块按钮
+            startProcessBtn.addEventListener('click', function() {
+                const text = subtitleTextarea.value.trim();
+                if (!text) return;
+                
+                // 生成唯一的字幕ID
+                subtitleId = 'subtitle_' + Date.now();
+                
+                // 显示进度条
+                progressSection.classList.remove('hidden');
+                blocksSection.classList.add('hidden');
+                
+                // 模拟AI处理进度
+                simulateAIProcessing();
+            });
+
+            // 模拟AI处理进度
+            function simulateAIProcessing() {
+                let progress = 0;
+                const steps = [
+                    { progress: 20, text: '正在分析字幕内容...' },
+                    { progress: 40, text: '识别对话场景...' },
+                    { progress: 60, text: '智能分块处理...' },
+                    { progress: 80, text: '生成学习模块...' },
+                    { progress: 100, text: '处理完成！' }
+                ];
+                
+                let currentStep = 0;
+                const interval = setInterval(() => {
+                    if (currentStep < steps.length) {
+                        progress = steps[currentStep].progress;
+                        progressBar.style.width = progress + '%';
+                        progressText.textContent = steps[currentStep].text;
+                        progressPercentage.textContent = progress + '%';
+                        currentStep++;
+                    } else {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            progressSection.classList.add('hidden');
+                            generateBlocks();
+                            blocksSection.classList.remove('hidden');
+                            blocksSection.classList.add('fade-in');
+                        }, 500);
+                    }
+                }, 800);
+            }
+
+            // 生成模拟分块结果
+            function generateBlocks() {
+                const sampleBlocks = [
+                    {
+                        id: 'block_1',
+                        title: '情景模块 1',
+                        content: 'Ross: Hey, Chandler! What are you doing here?\nChandler: Just hanging out. You know, the usual.',
+                        words: 15,
+                        difficulty: '简单'
+                    },
+                    {
+                        id: 'block_2',
+                        title: '情景模块 2',
+                        content: 'Rachel: I can\'t believe he did that!\nMonica: I know, right? It was totally unexpected.',
+                        words: 12,
+                        difficulty: '中等'
+                    },
+                    {
+                        id: 'block_3',
+                        title: '情景模块 3',
+                        content: 'Phoebe: Sometimes you have to take risks in life.\nJoey: Yeah, but what if it doesn\'t work out?',
+                        words: 14,
+                        difficulty: '中等'
+                    },
+                    {
+                        id: 'block_4',
+                        title: '情景模块 4',
+                        content: 'The friends gathered at Central Perk, discussing their weekend plans and sharing stories from their week.',
+                        words: 20,
+                        difficulty: '较难'
+                    }
+                ];
+                
+                currentBlocks = sampleBlocks;
+                renderBlocks();
+                updateBlockSelection();
+            }
+
+            // 渲染分块列表
+            function renderBlocks() {
+                blocksList.innerHTML = '';
+                totalBlocksSpan.textContent = currentBlocks.length;
+                
+                currentBlocks.forEach((block, index) => {
+                    const blockCard = document.createElement('div');
+                    blockCard.id = block.id;
+                    blockCard.className = 'block-card rounded-xl p-6';
+                    blockCard.dataset.blockIndex = index;
+                    
+                    const difficultyColors = {
+                        '简单': 'text-success',
+                        '中等': 'text-warning',
+                        '较难': 'text-danger'
+                    };
+                    
+                    blockCard.innerHTML = `
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-lg bg-primary bg-opacity-20 flex items-center justify-center">
+                                    <span class="text-primary font-semibold text-sm">${index + 1}</span>
+                                </div>
+                                <div>
+                                    <h3 class="font-semibold text-white">${block.title}</h3>
+                                    <div class="flex items-center space-x-4 text-sm text-gray-400 mt-1">
+                                        <span><i class="fas fa-file-text mr-1"></i>${block.words} 词</span>
+                                        <span><i class="fas fa-signal mr-1"></i><span class="${difficultyColors[block.difficulty]}">${block.difficulty}</span></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="select-block-btn p-2 rounded-lg hover:bg-white hover:bg-opacity-10 transition-colors">
+                                <i class="fas fa-check text-gray-400"></i>
+                            </button>
+                        </div>
+                        <div class="bg-gray-800 bg-opacity-30 rounded-lg p-4 mb-4">
+                            <pre class="text-gray-300 text-sm whitespace-pre-wrap font-mono leading-relaxed">${block.content}</pre>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="text-xs text-gray-400">
+                                <i class="fas fa-lightbulb mr-1"></i>包含 ${Math.floor(Math.random() * 5) + 3} 个考试词汇
+                            </div>
+                            <button class="edit-block-btn text-primary hover:text-secondary text-sm">
+                                <i class="fas fa-edit mr-1"></i>编辑
+                            </button>
+                        </div>
+                    `;
+                    
+                    blocksList.appendChild(blockCard);
+                    
+                    // 添加选择事件
+                    const selectBtn = blockCard.querySelector('.select-block-btn');
+                    selectBtn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        toggleBlockSelection(block.id);
+                    });
+                    
+                    // 添加整行选择事件
+                    blockCard.addEventListener('click', function() {
+                        toggleBlockSelection(block.id);
+                    });
+                });
+            }
+
+            // 切换分块选择状态
+            function toggleBlockSelection(blockId) {
+                if (selectedBlocks.has(blockId)) {
+                    selectedBlocks.delete(blockId);
+                } else {
+                    selectedBlocks.add(blockId);
+                }
+                updateBlockSelection();
+            }
+
+            // 更新分块选择状态
+            function updateBlockSelection() {
+                selectedCountSpan.textContent = selectedBlocks.size;
+                
+                // 更新UI
+                document.querySelectorAll('.block-card').forEach(card => {
+                    const blockId = card.id;
+                    const selectBtn = card.querySelector('.select-block-btn i');
+                    
+                    if (selectedBlocks.has(blockId)) {
+                        card.classList.add('selected');
+                        selectBtn.classList.remove('fa-check', 'text-gray-400');
+                        selectBtn.classList.add('fa-check-circle', 'text-primary');
+                    } else {
+                        card.classList.remove('selected');
+                        selectBtn.classList.remove('fa-check-circle', 'text-primary');
+                        selectBtn.classList.add('fa-check', 'text-gray-400');
+                    }
+                });
+                
+                // 更新控制按钮状态
+                const hasSelection = selectedBlocks.size > 0;
+                const hasMultipleSelection = selectedBlocks.size > 1;
+                
+                mergeBtn.disabled = !hasMultipleSelection;
+                splitBtn.disabled = !hasSelection || selectedBlocks.size > 1;
+                deleteBtn.disabled = !hasSelection;
+                moveUpBtn.disabled = !hasSelection || selectedBlocks.size > 1;
+                moveDownBtn.disabled = !hasSelection || selectedBlocks.size > 1;
+            }
+
+            // 分块控制按钮事件
+            mergeBtn.addEventListener('click', function() {
+                if (selectedBlocks.size < 2) return;
+                
+                // 模拟合并操作
+                console.log('合并选中的分块');
+                alert('合并功能演示：将选中的分块合并为一个');
+                selectedBlocks.clear();
+                updateBlockSelection();
+            });
+
+            splitBtn.addEventListener('click', function() {
+                if (selectedBlocks.size !== 1) return;
+                
+                // 模拟拆分操作
+                console.log('拆分选中的分块');
+                alert('拆分功能演示：将选中的分块拆分为两个');
+                selectedBlocks.clear();
+                updateBlockSelection();
+            });
+
+            deleteBtn.addEventListener('click', function() {
+                if (selectedBlocks.size === 0) return;
+                
+                if (confirm(`确定要删除选中的 ${selectedBlocks.size} 个分块吗？`)) {
+                    console.log('删除选中的分块');
+                    selectedBlocks.clear();
+                    updateBlockSelection();
+                }
+            });
+
+            moveUpBtn.addEventListener('click', function() {
+                if (selectedBlocks.size !== 1) return;
+                
+                console.log('上移选中的分块');
+                alert('上移功能演示：将选中的分块向上移动');
+            });
+
+            moveDownBtn.addEventListener('click', function() {
+                if (selectedBlocks.size !== 1) return;
+                
+                console.log('下移选中的分块');
+                alert('下移功能演示：将选中的分块向下移动');
+            });
+
+            // 开始学习按钮
+            startLearningBtn.addEventListener('click', function() {
+                if (currentBlocks.length === 0) return;
+                
+                // 跳转到学习内容页，传递第一个分块的ID
+                const firstBlockId = currentBlocks[0].id;
+                window.location.href = `P-LEARNING_CONTENT.html?subtitleId=${subtitleId}&blockId=${firstBlockId}`;
+            });
+
+            // 侧边栏导航事件
+            document.querySelector('#nav-home').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-HOME.html';
+            });
+
+            document.querySelector('#nav-record').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-LEARNING_RECORD.html';
+            });
+
+            document.querySelector('#nav-notes').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-NOTE_MANAGE.html';
+            });
+
+            document.querySelector('#nav-settings').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-SETTINGS.html';
+            });
+
+            // 初始化页面
+            startProcessBtn.disabled = true;
+        });
+    </script>
+    
+    <!-- 侧边栏开关按钮 -->
+    <button id="sidebar-toggle" class="fixed left-4 top-1/2 transform -translate-y-1/2 z-50 w-10 h-10 rounded-full glass-button flex items-center justify-center text-white shadow-lg">
+        <i class="fas fa-bars"></i>
+    </button>
+</body>
+</html>

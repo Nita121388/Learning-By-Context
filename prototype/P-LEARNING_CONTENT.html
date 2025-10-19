@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字幕智析 - 学习内容</title>
+    <script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+    <script src="https://unpkg.byted-static.com/fortawesome/fontawesome-free/6.7.2/js/all.min.js" data-auto-replace-svg="nest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                        tertiary: '#06b6d4',
+                        success: '#10b981',
+                        danger: '#ef4444',
+                        warning: '#f59e0b',
+                        info: '#3b82f6',
+                        'glass-bg': 'rgba(255, 255, 255, 0.1)',
+                        'glass-border': 'rgba(255, 255, 255, 0.2)',
+                        'dark-bg': '#0f0f23',
+                        'dark-card': '#1a1a2e',
+                        'dark-surface': '#16213e'
+                    },
+                    backdropBlur: {
+                        'xs': '2px',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .glass-nav {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-sidebar {
+            background: rgba(26, 26, 46, 0.9);
+            backdrop-filter: blur(15px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-button {
+            background: rgba(99, 102, 241, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-button:hover {
+            background: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        }
+        
+        .glass-input {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 20px rgba(99, 102, 241, 0.3); }
+            to { box-shadow: 0 0 30px rgba(99, 102, 241, 0.6); }
+        }
+        
+        .floating-card {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .glowing-border {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        .sidebar-item {
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .sidebar-item.active {
+            background: rgba(99, 102, 241, 0.2);
+            border-right: 3px solid #6366f1;
+        }
+        
+        .block-nav-item {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .block-nav-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        .block-nav-item.active {
+            background: rgba(99, 102, 241, 0.2);
+            border-left: 3px solid #6366f1;
+        }
+        
+        .knowledge-tag {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+        
+        .vocab-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .vocab-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* 新增样式 */
+        .notes-tab {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .notes-tab.active {
+            color: white;
+            border-bottom: 2px solid #6366f1;
+        }
+        
+        .word-highlight {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+        
+        .word-highlight:hover, .word-highlight.active {
+            background-color: rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+        
+        .notes-section {
+            display: block;
+        }
+        
+        .notes-section[data-type]:not([data-type="all"]) {
+            display: none;
+        }
+        
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.5);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.7);
+        }
+        
+        /* 垂直布局样式 */
+        .layout-vertical #content-container {
+            flex-direction: column;
+        }
+        
+        .layout-vertical #subtitle-container,
+        .layout-vertical #notes-container {
+            width: 100%;
+        }
+    </style>
+    </style>
+</head>
+<body class="text-white font-sans">
+    <!-- 顶部导航栏 -->
+    <nav id="top-nav" class="glass-nav fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-6 z-50">
+        <div id="nav-left" class="flex items-center space-x-4">
+            <div id="logo" class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                    <i class="fas fa-language text-white text-lg"></i>
+                </div>
+                <span class="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">字幕智析</span>
+            </div>
+        </div>
+        
+        <div id="nav-center" class="flex-1 max-w-md mx-8">
+            <div class="relative">
+                <input 
+                    type="text" 
+                    id="global-search" 
+                    placeholder="搜索学习内容..." 
+                    class="w-full px-4 py-2 pl-10 rounded-xl glass-input text-white placeholder-gray-300 focus:outline-none"
+                >
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300"></i>
+            </div>
+        </div>
+        
+        <div id="nav-right" class="flex items-center space-x-4">
+            <button id="notification-btn" class="relative p-2 rounded-lg glass-button">
+                <i class="fas fa-bell text-white"></i>
+                <span class="absolute -top-1 -right-1 w-3 h-3 bg-danger rounded-full"></span>
+            </button>
+            <div id="user-menu" class="relative">
+                <button id="user-avatar" class="flex items-center space-x-2 p-2 rounded-lg glass-button">
+                    <img src="https://s.coze.cn/image/T4jj4ruPvSM/" 
+                         alt="用户头像" 
+                         class="w-8 h-8 rounded-full"
+                         data-category="人物">
+                    <span class="text-white">学习者</span>
+                    <i class="fas fa-chevron-down text-gray-300 text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 左侧菜单 -->
+    <aside id="sidebar" class="glass-sidebar fixed left-0 top-16 bottom-0 w-64 z-40 transition-all duration-300">
+        <div id="sidebar-content" class="p-4">
+            <nav id="sidebar-nav" class="space-y-2">
+                <a href="P-HOME.html" id="nav-home" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:text-white">
+                    <i class="fas fa-home text-lg"></i>
+                    <span class="font-medium">首页</span>
+                </a>
+                <a href="P-SUBTITLE_PROCESS.html" id="nav-subtitle" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:text-white">
+                    <i class="fas fa-file-alt text-lg"></i>
+                    <span class="font-medium">字幕处理</span>
+                </a>
+                <a href="P-LEARNING_RECORD.html" id="nav-record" class="sidebar-item active flex items-center space-x-3 px-4 py-3 rounded-xl text-white">
+                    <i class="fas fa-chart-line text-lg"></i>
+                    <span class="font-medium">学习记录</span>
+                </a>
+                <a href="P-NOTE_MANAGE.html" id="nav-notes" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:text-white">
+                    <i class="fas fa-sticky-note text-lg"></i>
+                    <span class="font-medium">笔记管理</span>
+                </a>
+                <a href="P-SETTINGS.html" id="nav-settings" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:text-white">
+                    <i class="fas fa-cog text-lg"></i>
+                    <span class="font-medium">个人设置</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main id="main-content" class="ml-64 mt-16 p-6 min-h-screen">
+        <!-- 页面头部 - 简化显示当前情景 -->
+        <header id="page-header" class="mb-6">
+            <div id="content-info" class="glass-card rounded-xl p-4 text-center">
+                <div class="text-lg font-semibold text-white">老友记 S03E05 - 咖啡厅对话</div>
+                <div class="text-sm text-gray-300">关于工作和生活的日常对话</div>
+            </div>
+        </header>
+
+        <!-- 布局控制区 -->
+        <div id="layout-controls" class="flex justify-between items-center mb-6">
+            <div id="subtitle-controls" class="flex items-center space-x-4">
+                <span class="text-gray-300">显示行数:</span>
+                <select id="subtitle-line-count" class="glass-input rounded-lg px-3 py-2 text-white focus:outline-none">
+                    <option value="2">2行</option>
+                    <option value="3" selected>3行</option>
+                    <option value="4">4行</option>
+                    <option value="5">5行</option>
+                </select>
+            </div>
+            <div id="layout-toggle" class="flex items-center space-x-2">
+                <button id="layout-vertical" class="glass-button rounded-lg px-3 py-2 text-white">
+                    <i class="fas fa-columns"></i>
+                </button>
+                <button id="layout-horizontal" class="glass-button rounded-lg px-3 py-2 text-white bg-primary bg-opacity-30">
+                    <i class="fas fa-sort"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 主要内容区域 - 左右布局 -->
+        <div id="content-container" class="flex flex-col lg:flex-row gap-6 mb-8">
+            <!-- 左侧字幕区域 -->
+            <div id="subtitle-container" class="lg:w-1/2">
+                <div class="glass-card rounded-xl p-4 h-full">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-semibold text-white">字幕原文</h2>
+                        <div class="flex space-x-2">
+                            <button id="prev-subtitle" class="glass-button rounded-lg p-2 text-white">
+                                <i class="fas fa-chevron-up"></i>
+                            </button>
+                            <button id="next-subtitle" class="glass-button rounded-lg p-2 text-white">
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="subtitle-text" class="text-lg text-white leading-relaxed h-64 overflow-y-auto pr-2">
+                        <p class="mb-4"><strong>Ross:</strong> Hey, guys! What's going on? You look like you've seen a ghost.</p>
+                        <p class="mb-4"><strong>Rachel:</strong> Oh my God, Ross! You won't <span class="word-highlight" data-word="believe">believe</span> what just happened. I was at the coffee shop, and this guy came up to me...</p>
+                        <p class="mb-4"><strong>Chandler:</strong> Let me guess, he asked for your number? That happens to her all the time.</p>
+                        <p class="mb-4"><strong>Rachel:</strong> No, it's not that! He said he was from the fashion magazine and wants me to model for them!</p>
+                        <p><strong>Monica:</strong> That's <span class="word-highlight" data-word="amazing">amazing</span>! You have to do it! This could be your <span class="word-highlight" data-word="big break">big break</span>!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧笔记区域 -->
+            <div id="notes-container" class="lg:w-1/2">
+                <div class="glass-card rounded-xl p-4 h-full">
+                    <!-- 笔记标签页 -->
+                    <div class="flex border-b border-gray-700 mb-4">
+                        <button class="notes-tab active px-4 py-2 text-white font-medium" data-tab="all">全部</button>
+                        <button class="notes-tab px-4 py-2 text-gray-400 hover:text-white" data-tab="vocabulary">单词</button>
+                        <button class="notes-tab px-4 py-2 text-gray-400 hover:text-white" data-tab="phrases">短语</button>
+                        <button class="notes-tab px-4 py-2 text-gray-400 hover:text-white" data-tab="grammar">语法</button>
+                        <button class="notes-tab px-4 py-2 text-gray-400 hover:text-white" data-tab="pronunciation">发音</button>
+                        <button class="notes-tab px-4 py-2 text-gray-400 hover:text-white" data-tab="culture">文化</button>
+                    </div>
+
+                    <!-- 笔记内容区域 -->
+                    <div id="notes-content" class="h-64 overflow-y-auto pr-2">
+                        <!-- 单词笔记 -->
+                        <div class="notes-section" data-type="vocabulary">
+                            <div class="mb-4 p-3 bg-gray-800 bg-opacity-50 rounded-lg">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="text-white font-medium">believe</h4>
+                                        <p class="text-gray-300 text-sm">/bɪˈliːv/ v. 相信，认为</p>
+                                    </div>
+                                    <div class="flex space-x-1">
+                                        <span class="knowledge-tag px-2 py-1 rounded-full text-xs text-white">CET-4</span>
+                                        <span class="knowledge-tag px-2 py-1 rounded-full text-xs text-white">IELTS</span>
+                                    </div>
+                                </div>
+                                <p class="text-gray-400 text-xs mt-2">例句：You won't believe what just happened.</p>
+                            </div>
+
+                            <div class="mb-4 p-3 bg-gray-800 bg-opacity-50 rounded-lg">
+                                <div class="flex justify-between items-start">
+                                    <div>
+                                        <h4 class="text-white font-medium">amazing</h4>
+                                        <p class="text-gray-300 text-sm">/əˈmeɪzɪŋ/ adj. 令人惊奇的</p>
+                                    </div>
+                                    <div class="flex space-x-1">
+                                        <span class="knowledge-tag px-2 py-1 rounded-full text-xs text-white">CET-6</span>
+                                        <span class="knowledge-tag px-2 py-1 rounded-full text-xs text-white">TOEFL</span>
+                                    </div>
+                                </div>
+                                <p class="text-gray-400 text-xs mt-2">例句：That's amazing! You have to do it!</p>
+                            </div>
+                        </div>
+
+                        <!-- 短语笔记 -->
+                        <div class="notes-section" data-type="phrases">
+                            <div class="mb-4 p-3 bg-gray-800 bg-opacity-50 rounded-lg">
+                                <h4 class="text-white font-medium">what's going on</h4>
+                                <p class="text-gray-300 text-sm">发生了什么事</p>
+                                <p class="text-gray-400 text-xs mt-2">例句：Hey, guys! What's going on?</p>
+                            </div>
+
+                            <div class="mb-4 p-3 bg-gray-800 bg-opacity-50 rounded-lg">
+                                <h4 class="text-white font-medium">big break</h4>
+                                <p class="text-gray-300 text-sm">重大突破，重要机会</p>
+                                <p class="text-gray-400 text-xs mt-2">例句：This could be your big break!</p>
+                            </div>
+                        </div>
+
+                        <!-- 语法笔记 -->
+                        <div class="notes-section" data-type="grammar">
+                            <div class="mb-4 p-3 bg-gray-800 bg-opacity-50 rounded-lg">
+                                <h4 class="text-white font-medium">宾语从句</h4>
+                                <p class="text-gray-300 text-sm">在复合句中用作宾语的从句</p>
+                                <p class="text-gray-400 text-xs mt-2">例句：You won't believe what just happened.</p>
+                            </div>
+                        </div>
+
+                        <!-- 发音笔记 -->
+                        <div class="notes-section" data-type="pronunciation">
+                            <div class="mb-4 p-3 bg-gray-800 bg-opacity-50 rounded-lg">
+                                <h4 class="text-white font-medium">连读现象</h4>
+                                <p class="text-gray-300 text-sm">What's going on → /wɒts ˈɡəʊɪŋ ɒn/</p>
+                                <p class="text-gray-400 text-xs mt-2">going on 连读</p>
+                            </div>
+                        </div>
+
+                        <!-- 文化笔记 -->
+                        <div class="notes-section" data-type="culture">
+                            <div class="mb-4 p-3 bg-gray-800 bg-opacity-50 rounded-lg">
+                                <h4 class="text-white font-medium">美国咖啡文化</h4>
+                                <p class="text-gray-300 text-sm">咖啡厅是社交、工作、学习的重要场所</p>
+                                <p class="text-gray-400 text-xs mt-2">朋友们经常在咖啡厅聚会聊天，讨论各种话题</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 笔记操作按钮 -->
+                    <div class="flex justify-between mt-4 pt-4 border-t border-gray-700">
+                        <button id="add-note-btn" class="glass-button rounded-lg px-4 py-2 text-white">
+                            <i class="fas fa-plus mr-2"></i>添加笔记
+                        </button>
+                        <div class="flex space-x-2">
+                            <button id="export-md-btn" class="glass-button rounded-lg px-4 py-2 text-white">
+                                <i class="fas fa-file-export mr-2"></i>导出MD
+                            </button>
+                            <button id="export-pdf-btn" class="glass-button rounded-lg px-4 py-2 text-white">
+                                <i class="fas fa-file-pdf mr-2"></i>导出PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 开始练习按钮 -->
+        <section id="practice-section" class="mb-8">
+            <div class="text-center">
+                <button id="start-practice-btn" class="glass-button rounded-xl px-8 py-4 text-white font-semibold text-lg">
+                    <i class="fas fa-play mr-3"></i>
+                    开始应试练习
+                </button>
+            </div>
+        </section>
+    </main>
+    </main>
+
+    <!-- 右侧面板 (仅在大屏幕显示) -->
+    <aside id="right-panel" class="hidden xl:block fixed right-0 top-16 bottom-0 w-80 p-6 overflow-y-auto">
+        <!-- 相关知识点推荐 -->
+        <section id="related-knowledge" class="mb-8">
+            <h3 id="related-title" class="text-lg font-semibold text-white mb-4">相关知识点</h3>
+            <div id="related-list" class="space-y-4">
+                <div class="glass-card rounded-xl p-4 cursor-pointer hover:bg-white hover:bg-opacity-15 transition-colors">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                            <i class="fas fa-book text-white"></i>
+                        </div>
+                        <div>
+                            <p class="text-white font-medium text-sm">时态复习</p>
+                            <p class="text-gray-400 text-xs">一般过去时 vs 现在完成时</p>
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-400">
+                        5分钟 • 初级
+                    </div>
+                </div>
+                
+                <div class="glass-card rounded-xl p-4 cursor-pointer hover:bg-white hover:bg-opacity-15 transition-colors">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-success to-tertiary flex items-center justify-center">
+                            <i class="fas fa-comments text-white"></i>
+                        </div>
+                        <div>
+                            <p class="text-white font-medium text-sm">日常对话练习</p>
+                            <p class="text-gray-400 text-xs">咖啡厅场景对话</p>
+                        </div>
+                    </div>
+                    <div class="text-xs text-gray-400">
+                        8分钟 • 中级
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 学习工具 -->
+        <section id="learning-tools">
+            <h3 id="tools-title" class="text-lg font-semibold text-white mb-4">学习工具</h3>
+            <div id="tools-list" class="space-y-4">
+                <div class="glass-card rounded-xl p-4">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <i class="fas fa-search text-primary"></i>
+                        <span class="text-white font-medium">词典查询</span>
+                    </div>
+                    <div class="relative">
+                        <input 
+                            type="text" 
+                            id="dictionary-search" 
+                            placeholder="输入单词查询..." 
+                            class="w-full px-3 py-2 rounded-lg glass-input text-white placeholder-gray-400 text-sm focus:outline-none"
+                        >
+                        <button class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-primary">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="glass-card rounded-xl p-4">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <i class="fas fa-volume-up text-secondary"></i>
+                        <span class="text-white font-medium">发音练习</span>
+                    </div>
+                    <div class="space-y-2">
+                        <button class="w-full glass-button rounded-lg py-2 text-white text-sm">
+                            <i class="fas fa-play mr-2"></i>
+                            播放整段对话
+                        </button>
+                        <button class="w-full glass-button rounded-lg py-2 text-white text-sm">
+                            <i class="fas fa-microphone mr-2"></i>
+                            录音对比
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </aside>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 解析URL参数的辅助函数
+            function getUrlParams() {
+                const params = {};
+                const queryString = window.location.search.substring(1);
+                const urlParams = new URLSearchParams(queryString);
+                
+                for(const [key, value] of urlParams.entries()) {
+                    params[key] = value;
+                }
+                return params;
+            }
+
+            // 获取URL参数
+            const params = getUrlParams();
+            
+            // 根据参数加载相应的学习内容
+            if(params.blockId) {
+                loadBlockContent(params.blockId);
+            }
+            
+            // 侧边栏开关功能
+            const sidebarToggle = document.querySelector('#sidebar-toggle');
+            const sidebar = document.querySelector('#sidebar');
+            const mainContent = document.querySelector('#main-content');
+            
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('translate-x-0');
+                sidebar.classList.toggle('-translate-x-full');
+                mainContent.classList.toggle('ml-64');
+                mainContent.classList.toggle('ml-0');
+            });
+
+            // 情景分块导航切换
+            const blockNavItems = document.querySelectorAll('.block-nav-item');
+            blockNavItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const blockId = this.dataset.blockId;
+                    
+                    // 更新导航状态
+                    blockNavItems.forEach(nav => nav.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 加载对应模块内容
+                    loadBlockContent(blockId);
+                });
+            });
+
+            // 加载模块内容的函数
+            function loadBlockContent(blockId) {
+                // 在实际应用中，这里会调用API获取数据
+                // 这里模拟不同模块的内容
+                const blockContents = {
+                    'block-1': {
+                        title: '咖啡厅对话',
+                        subtitle: '关于工作和生活的日常对话'
+                    },
+                    'block-2': {
+                        title: '餐厅聚餐',
+                        subtitle: '朋友间的聚餐场景'
+                    },
+                    'block-3': {
+                        title: '办公室讨论',
+                        subtitle: '职场相关的对话内容'
+                    },
+                    'block-4': {
+                        title: '家庭聚会',
+                        subtitle: '家庭环境中的交流'
+                    }
+                };
+
+                const content = blockContents[blockId];
+                if (content) {
+                    // 更新页面标题等信息
+                    document.querySelector('#content-info .text-lg').textContent = `老友记 S03E05 - ${content.title}`;
+                    document.querySelector('#content-info .text-sm').textContent = content.subtitle;
+                    
+                    // 这里可以更新其他内容区域
+                    console.log(`加载模块内容: ${content.title}`);
+                }
+            }
+
+            // 保存笔记
+            document.querySelector('#save-notes-btn').addEventListener('click', function() {
+                const notesContent = document.querySelector('#notes-textarea').value;
+                
+                // 模拟保存操作
+                this.innerHTML = '<i class="fas fa-check mr-2"></i>已保存';
+                this.classList.add('bg-success', 'border-success');
+                
+                setTimeout(() => {
+                    this.innerHTML = '<i class="fas fa-save mr-2"></i>保存笔记';
+                    this.classList.remove('bg-success', 'border-success');
+                }, 2000);
+                
+                console.log('保存笔记内容:', notesContent);
+            });
+
+            // 开始练习
+            document.querySelector('#start-practice-btn').addEventListener('click', function() {
+                const currentBlockId = document.querySelector('.block-nav-item.active').dataset.blockId;
+                window.location.href = `P-PRACTICE.html?blockId=${currentBlockId}`;
+            });
+
+            // 侧边栏导航
+            document.querySelector('#nav-home').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-HOME.html';
+            });
+
+            document.querySelector('#nav-subtitle').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-SUBTITLE_PROCESS.html';
+            });
+
+            document.querySelector('#nav-record').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-LEARNING_RECORD.html';
+            });
+
+            document.querySelector('#nav-notes').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-NOTE_MANAGE.html';
+            });
+
+            document.querySelector('#nav-settings').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-SETTINGS.html';
+            });
+
+            // 发音按钮点击效果
+            const pronunciationButtons = document.querySelectorAll('#pronunciation-section button');
+            pronunciationButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    console.log('播放发音:', this.parentElement.querySelector('span').textContent);
+                    // 这里可以添加发音播放功能
+                });
+            });
+
+            // 词典查询功能
+            document.querySelector('#dictionary-search').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const word = this.value.trim();
+                    if (word) {
+                        console.log('查询单词:', word);
+                        // 这里可以添加词典查询功能
+                    }
+                }
+            });
+
+            // 相关知识点推荐点击
+            const relatedItems = document.querySelectorAll('#related-knowledge .glass-card');
+            relatedItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    console.log('点击相关知识点:', this.querySelector('p').textContent);
+                    // 这里可以跳转到相关知识点页面
+                });
+            });
+
+            // 学习工具按钮
+            const toolButtons = document.querySelectorAll('#learning-tools button');
+            toolButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    console.log('使用学习工具:', this.textContent.trim());
+                    // 这里可以添加相应的工具功能
+                });
+            });
+
+            // 添加页面加载动画
+            const cards = document.querySelectorAll('.glass-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+        });
+    </script>
+    
+    <!-- 侧边栏开关按钮 -->
+    <button id="sidebar-toggle" class="fixed left-4 top-1/2 transform -translate-y-1/2 z-50 w-10 h-10 rounded-full glass-button flex items-center justify-center text-white shadow-lg">
+        <i class="fas fa-bars"></i>
+    </button>
+</body>
+</html>

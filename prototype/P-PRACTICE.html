@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>字幕智析 - 应试练习</title>
+    <script src="https://unpkg.byted-static.com/coze/space_ppt_lib/1.0.3-alpha.12/lib/tailwindcss.js"></script>
+    <script src="https://unpkg.byted-static.com/fortawesome/fontawesome-free/6.7.2/js/all.min.js" data-auto-replace-svg="nest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6366f1',
+                        secondary: '#8b5cf6',
+                        tertiary: '#06b6d4',
+                        success: '#10b981',
+                        danger: '#ef4444',
+                        warning: '#f59e0b',
+                        info: '#3b82f6',
+                        'glass-bg': 'rgba(255, 255, 255, 0.1)',
+                        'glass-border': 'rgba(255, 255, 255, 0.2)',
+                        'dark-bg': '#0f0f23',
+                        'dark-card': '#1a1a2e',
+                        'dark-surface': '#16213e'
+                    },
+                    backdropBlur: {
+                        'xs': '2px',
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'fadeIn': 'fadeIn 0.5s ease-in-out',
+                        'slideUp': 'slideUp 0.3s ease-out',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .glass-nav {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-sidebar {
+            background: rgba(26, 26, 46, 0.9);
+            backdrop-filter: blur(15px);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .glass-button {
+            background: rgba(99, 102, 241, 0.2);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-button:hover {
+            background: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+        }
+        
+        .glass-input {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+            outline: none;
+        }
+        
+        .sidebar-item {
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateX(5px);
+        }
+        
+        .sidebar-item.active {
+            background: rgba(99, 102, 241, 0.2);
+            border-right: 3px solid #6366f1;
+        }
+        
+        .option-item {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .option-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+        
+        .option-item.selected {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.5);
+        }
+        
+        .option-item.correct {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+        
+        .option-item.incorrect {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .result-correct {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .result-incorrect {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(245, 158, 11, 0.1));
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+    </style>
+</head>
+<body class="text-white font-sans">
+    <!-- 顶部导航栏 -->
+    <nav id="top-nav" class="glass-nav fixed top-0 left-0 right-0 h-16 flex items-center justify-between px-6 z-50">
+        <div id="nav-left" class="flex items-center space-x-4">
+            <div id="logo" class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                    <i class="fas fa-language text-white text-lg"></i>
+                </div>
+                <span class="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">字幕智析</span>
+            </div>
+        </div>
+        
+        <div id="nav-center" class="flex-1 max-w-md mx-8">
+            <div class="relative">
+                <input 
+                    type="text" 
+                    id="global-search" 
+                    placeholder="搜索学习内容..." 
+                    class="w-full px-4 py-2 pl-10 rounded-xl glass-input text-white placeholder-gray-300 focus:outline-none"
+                >
+                <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-300"></i>
+            </div>
+        </div>
+        
+        <div id="nav-right" class="flex items-center space-x-4">
+            <button id="notification-btn" class="relative p-2 rounded-lg glass-button">
+                <i class="fas fa-bell text-white"></i>
+                <span class="absolute -top-1 -right-1 w-3 h-3 bg-danger rounded-full"></span>
+            </button>
+            <div id="user-menu" class="relative">
+                <button id="user-avatar" class="flex items-center space-x-2 p-2 rounded-lg glass-button">
+                    <img src="https://s.coze.cn/image/T0ht91B-H18/" 
+                         alt="用户头像" 
+                         class="w-8 h-8 rounded-full"
+                         data-category="人物">
+                    <span class="text-white">学习者</span>
+                    <i class="fas fa-chevron-down text-gray-300 text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 左侧菜单 -->
+    <aside id="sidebar" class="glass-sidebar fixed left-0 top-16 bottom-0 w-64 z-40 transition-all duration-300">
+        <div id="sidebar-content" class="p-4">
+            <nav id="sidebar-nav" class="space-y-2">
+                <a href="P-HOME.html" id="nav-home" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:text-white">
+                    <i class="fas fa-home text-lg"></i>
+                    <span class="font-medium">首页</span>
+                </a>
+                <a href="P-SUBTITLE_PROCESS.html" id="nav-subtitle" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:text-white">
+                    <i class="fas fa-file-alt text-lg"></i>
+                    <span class="font-medium">字幕处理</span>
+                </a>
+                <a href="P-LEARNING_RECORD.html" id="nav-record" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:text-white">
+                    <i class="fas fa-chart-line text-lg"></i>
+                    <span class="font-medium">学习记录</span>
+                </a>
+                <a href="P-NOTE_MANAGE.html" id="nav-notes" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:text-white">
+                    <i class="fas fa-sticky-note text-lg"></i>
+                    <span class="font-medium">笔记管理</span>
+                </a>
+                <a href="P-SETTINGS.html" id="nav-settings" class="sidebar-item flex items-center space-x-3 px-4 py-3 rounded-xl text-gray-300 hover:text-white">
+                    <i class="fas fa-cog text-lg"></i>
+                    <span class="font-medium">个人设置</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main id="main-content" class="ml-64 mt-16 p-6 min-h-screen">
+        <!-- 页面头部 -->
+        <header id="page-header" class="mb-8">
+            <div id="breadcrumb" class="text-sm text-gray-400 mb-2">
+                <span>首页</span>
+                <i class="fas fa-chevron-right mx-2"></i>
+                <span>学习内容</span>
+                <i class="fas fa-chevron-right mx-2"></i>
+                <span>应试练习</span>
+            </div>
+            <div id="page-title-section" class="flex items-center justify-between">
+                <div>
+                    <h1 id="page-title" class="text-3xl font-bold text-white mb-2">应试练习</h1>
+                    <p id="page-subtitle" class="text-gray-300">检验你的学习成果，巩固所学知识点</p>
+                </div>
+                <div id="progress-indicator" class="glass-card rounded-xl p-4 text-center">
+                    <div class="text-lg font-semibold text-white mb-1">进度</div>
+                    <div class="text-2xl font-bold text-primary">0/3</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- 练习表单区域 -->
+        <div id="practice-form-container" class="space-y-8">
+            <!-- 理解检查 -->
+            <section id="comprehension-check" class="glass-card rounded-xl p-6 fade-in">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                        <i class="fas fa-brain text-white"></i>
+                    </div>
+                    <h2 class="text-xl font-semibold text-white">理解检查</h2>
+                    <span class="text-sm text-gray-400 bg-gray-800 bg-opacity-50 px-3 py-1 rounded-full">选择题</span>
+                </div>
+                
+                <div id="comprehension-question" class="mb-6">
+                    <p class="text-lg text-white mb-4">
+                        在句子 "I've been working here for five years." 中，现在完成进行时的主要用法是：
+                    </p>
+                    
+                    <div id="comprehension-options" class="space-y-3">
+                        <div class="option-item glass-input rounded-lg p-4 border" data-option="A">
+                            <div class="flex items-center space-x-3">
+                                <span class="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center text-sm font-medium">A</span>
+                                <span class="text-white">表示过去某个时间点开始并持续到现在的动作</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-item glass-input rounded-lg p-4 border" data-option="B">
+                            <div class="flex items-center space-x-3">
+                                <span class="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center text-sm font-medium">B</span>
+                                <span class="text-white">表示将来要发生的动作</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-item glass-input rounded-lg p-4 border" data-option="C">
+                            <div class="flex items-center space-x-3">
+                                <span class="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center text-sm font-medium">C</span>
+                                <span class="text-white">表示过去完成的动作</span>
+                            </div>
+                        </div>
+                        
+                        <div class="option-item glass-input rounded-lg p-4 border" data-option="D">
+                            <div class="flex items-center space-x-3">
+                                <span class="w-6 h-6 rounded-full bg-gray-600 flex items-center justify-center text-sm font-medium">D</span>
+                                <span class="text-white">表示习惯性的动作</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 仿写与替换 -->
+            <section id="sentence-practice" class="glass-card rounded-xl p-6 fade-in">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-success to-tertiary flex items-center justify-center">
+                        <i class="fas fa-edit text-white"></i>
+                    </div>
+                    <h2 class="text-xl font-semibold text-white">仿写与替换</h2>
+                    <span class="text-sm text-gray-400 bg-gray-800 bg-opacity-50 px-3 py-1 rounded-full">填空题</span>
+                </div>
+                
+                <div id="sentence-practice-content" class="mb-6">
+                    <p class="text-lg text-white mb-4">
+                        请用括号中的词汇替换下面句子中的划线部分，保持句子结构和语法正确：
+                    </p>
+                    
+                    <div class="glass-input rounded-lg p-4 mb-4">
+                        <p class="text-white mb-2">原句：<span class="text-gray-400">"I <u>used to play</u> basketball every weekend."</span></p>
+                        <p class="text-white">替换词：<span class="text-primary font-medium">[enjoy doing / love doing / like doing]</span></p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="sentence-input" class="block text-white font-medium mb-2">你的答案：</label>
+                        <textarea 
+                            id="sentence-input" 
+                            placeholder="请输入你的替换句子..."
+                            class="w-full px-4 py-3 rounded-lg glass-input text-white placeholder-gray-300 resize-none"
+                            rows="3"
+                        ></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 拓展问题 -->
+            <section id="expansion-question" class="glass-card rounded-xl p-6 fade-in">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-warning to-danger flex items-center justify-center">
+                        <i class="fas fa-lightbulb text-white"></i>
+                    </div>
+                    <h2 class="text-xl font-semibold text-white">拓展问题</h2>
+                    <span class="text-sm text-gray-400 bg-gray-800 bg-opacity-50 px-3 py-1 rounded-full">开放题</span>
+                </div>
+                
+                <div id="expansion-question-content" class="mb-6">
+                    <p class="text-lg text-white mb-4">
+                        请结合今天学习的内容，回答以下问题：
+                    </p>
+                    
+                    <div class="glass-input rounded-lg p-4 mb-4">
+                        <p class="text-white font-medium mb-2">
+                            在你的日常生活中，你如何使用现在完成进行时来描述你正在进行的活动？请举一个具体的例子。
+                        </p>
+                        <p class="text-gray-400 text-sm">
+                            （提示：可以参考雅思口语Part 1或Part 2的回答结构）
+                        </p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="expansion-input" class="block text-white font-medium mb-2">你的回答：</label>
+                        <textarea 
+                            id="expansion-input" 
+                            placeholder="请详细描述你的想法..."
+                            class="w-full px-4 py-3 rounded-lg glass-input text-white placeholder-gray-300 resize-none"
+                            rows="5"
+                        ></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 提交按钮 -->
+            <div id="submit-section" class="text-center fade-in">
+                <button id="submit-practice" class="glass-button rounded-xl px-8 py-4 text-white font-semibold text-lg">
+                    <i class="fas fa-paper-plane mr-2"></i>
+                    提交练习
+                </button>
+            </div>
+        </div>
+
+        <!-- 练习结果反馈区域 -->
+        <div id="practice-results" class="hidden space-y-8">
+            <!-- 理解检查结果 -->
+            <section id="comprehension-result" class="glass-card rounded-xl p-6 slide-up">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+                        <i class="fas fa-check-circle text-white"></i>
+                    </div>
+                    <h2 class="text-xl font-semibold text-white">理解检查结果</h2>
+                </div>
+                
+                <div id="comprehension-result-content" class="mb-6">
+                    <div class="result-correct rounded-lg p-4 mb-4">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            <span class="text-success font-medium">回答正确！</span>
+                        </div>
+                        <p class="text-white">
+                            现在完成进行时 (present perfect continuous) 确实用于表示从过去某个时间点开始并持续到现在的动作，强调动作的持续性。
+                        </p>
+                    </div>
+                    
+                    <div class="glass-input rounded-lg p-4">
+                        <p class="text-gray-300 text-sm mb-2">正确答案解析：</p>
+                        <ul class="text-white text-sm space-y-1">
+                            <li>• <span class="text-success font-medium">A选项</span>：正确，符合现在完成进行时的用法</li>
+                            <li>• <span class="text-gray-400">B选项</span>：错误，将来时应该用 will 或 be going to</li>
+                            <li>• <span class="text-gray-400">C选项</span>：错误，过去完成时应该用 had + 过去分词</li>
+                            <li>• <span class="text-gray-400">D选项</span>：错误，习惯性动作应该用一般现在时</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 仿写与替换结果 -->
+            <section id="sentence-result" class="glass-card rounded-xl p-6 slide-up">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-success to-tertiary flex items-center justify-center">
+                        <i class="fas fa-edit text-white"></i>
+                    </div>
+                    <h2 class="text-xl font-semibold text-white">仿写与替换结果</h2>
+                </div>
+                
+                <div id="sentence-result-content" class="mb-6">
+                    <div class="result-correct rounded-lg p-4 mb-4">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <i class="fas fa-check text-success"></i>
+                            <span class="text-success font-medium">仿写优秀！</span>
+                        </div>
+                        <p class="text-white">
+                            你的替换句子语法正确，很好地掌握了动词短语的用法。
+                        </p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="glass-input rounded-lg p-4">
+                            <p class="text-gray-300 text-sm mb-2">你的答案：</p>
+                            <p id="user-sentence-answer" class="text-white italic">"I enjoy playing basketball every weekend."</p>
+                        </div>
+                        
+                        <div class="glass-input rounded-lg p-4">
+                            <p class="text-gray-300 text-sm mb-2">其他可能的正确答案：</p>
+                            <ul class="text-white text-sm space-y-1">
+                                <li>• "I love playing basketball every weekend."</li>
+                                <li>• "I like playing basketball every weekend."</li>
+                                <li>• "I enjoy doing basketball every weekend."</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 拓展问题结果 -->
+            <section id="expansion-result" class="glass-card rounded-xl p-6 slide-up">
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-warning to-danger flex items-center justify-center">
+                        <i class="fas fa-lightbulb text-white"></i>
+                    </div>
+                    <h2 class="text-xl font-semibold text-white">拓展问题反馈</h2>
+                </div>
+                
+                <div id="expansion-result-content" class="mb-6">
+                    <div class="result-correct rounded-lg p-4 mb-4">
+                        <div class="flex items-center space-x-2 mb-2">
+                            <i class="fas fa-star text-warning"></i>
+                            <span class="text-warning font-medium">回答详细，思路清晰！</span>
+                        </div>
+                        <p class="text-white">
+                            你的回答很好地结合了实际生活，展示了对现在完成进行时的深入理解。
+                        </p>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="glass-input rounded-lg p-4">
+                            <p class="text-gray-300 text-sm mb-2">你的回答：</p>
+                            <p id="user-expansion-answer" class="text-white italic">
+                                "I've been learning English for three years. I started when I entered university, and I'm still studying it every day. I've been practicing speaking with my foreign friends and watching English movies to improve my skills."
+                            </p>
+                        </div>
+                        
+                        <div class="glass-input rounded-lg p-4">
+                            <p class="text-gray-300 text-sm mb-2">反馈建议：</p>
+                            <ul class="text-white text-sm space-y-1">
+                                <li>• <span class="text-success">优点</span>：很好地使用了现在完成进行时，时间状语明确</li>
+                                <li>• <span class="text-success">优点</span>：结合了具体的学习方法和活动</li>
+                                <li>• <span class="text-warning">建议</span>：可以加入更多细节，如遇到的困难或取得的进步</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 总体评价 -->
+            <section id="overall-evaluation" class="glass-card rounded-xl p-6 slide-up">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-success to-tertiary flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-trophy text-white text-2xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-white mb-2">练习完成！</h2>
+                    <p class="text-gray-300">恭喜你，本次练习获得了满分！</p>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-success mb-1">3/3</div>
+                        <div class="text-sm text-gray-300">正确率</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-primary mb-1">100%</div>
+                        <div class="text-sm text-gray-300">得分</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-warning mb-1">优秀</div>
+                        <div class="text-sm text-gray-300">等级</div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button id="back-to-learning" class="glass-button rounded-xl px-8 py-4 text-white font-semibold text-lg">
+                        <i class="fas fa-arrow-left mr-2"></i>
+                        返回学习内容
+                    </button>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 解析URL参数的辅助函数
+            function getUrlParams() {
+                const params = {};
+                const queryString = window.location.search.substring(1);
+                const urlParams = new URLSearchParams(queryString);
+                
+                for(const [key, value] of urlParams.entries()) {
+                    params[key] = value;
+                }
+                return params;
+            }
+
+            // 获取URL参数
+            const params = getUrlParams();
+            const blockId = params.blockId || 'default-block';
+
+            // 侧边栏菜单点击事件
+            document.querySelector('#nav-home').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-HOME.html';
+            });
+
+            document.querySelector('#nav-subtitle').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-SUBTITLE_PROCESS.html';
+            });
+
+            document.querySelector('#nav-record').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-LEARNING_RECORD.html';
+            });
+
+            document.querySelector('#nav-notes').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-NOTE_MANAGE.html';
+            });
+
+            document.querySelector('#nav-settings').addEventListener('click', function(e) {
+                e.preventDefault();
+                window.location.href = 'P-SETTINGS.html';
+            });
+
+            // 理解检查选项点击事件
+            const comprehensionOptions = document.querySelectorAll('#comprehension-options .option-item');
+            let selectedOption = null;
+
+            comprehensionOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // 清除之前的选择
+                    comprehensionOptions.forEach(opt => opt.classList.remove('selected'));
+                    
+                    // 选择当前选项
+                    this.classList.add('selected');
+                    selectedOption = this.dataset.option;
+                    
+                    // 更新进度
+                    updateProgress();
+                });
+            });
+
+            // 仿写与替换输入事件
+            const sentenceInput = document.querySelector('#sentence-input');
+            sentenceInput.addEventListener('input', function() {
+                updateProgress();
+            });
+
+            // 拓展问题输入事件
+            const expansionInput = document.querySelector('#expansion-input');
+            expansionInput.addEventListener('input', function() {
+                updateProgress();
+            });
+
+            // 更新进度
+            function updateProgress() {
+                let completed = 0;
+                
+                if (selectedOption) completed++;
+                if (sentenceInput.value.trim()) completed++;
+                if (expansionInput.value.trim()) completed++;
+                
+                const progressIndicator = document.querySelector('#progress-indicator .text-2xl');
+                progressIndicator.textContent = `${completed}/3`;
+            }
+
+            // 提交练习
+            document.querySelector('#submit-practice').addEventListener('click', function() {
+                // 验证所有题目都已完成
+                if (!selectedOption) {
+                    alert('请完成理解检查题目');
+                    return;
+                }
+                
+                if (!sentenceInput.value.trim()) {
+                    alert('请完成仿写与替换题目');
+                    return;
+                }
+                
+                if (!expansionInput.value.trim()) {
+                    alert('请完成拓展问题');
+                    return;
+                }
+
+                // 隐藏练习表单
+                document.querySelector('#practice-form-container').classList.add('hidden');
+                
+                // 显示练习结果
+                document.querySelector('#practice-results').classList.remove('hidden');
+                
+                // 更新用户回答显示
+                document.querySelector('#user-sentence-answer').textContent = `"${sentenceInput.value.trim()}"`;
+                document.querySelector('#user-expansion-answer').textContent = `"${expansionInput.value.trim()}"`;
+                
+                // 记录练习结果（在实际应用中会发送到服务器）
+                console.log('练习提交成功', {
+                    blockId: blockId,
+                    comprehensionAnswer: selectedOption,
+                    sentenceAnswer: sentenceInput.value.trim(),
+                    expansionAnswer: expansionInput.value.trim(),
+                    score: 100,
+                    timestamp: new Date().toISOString()
+                });
+            });
+
+            // 返回学习内容
+            document.querySelector('#back-to-learning').addEventListener('click', function() {
+                window.location.href = `P-LEARNING_CONTENT.html?blockId=${blockId}`;
+            });
+
+            // 键盘快捷键
+            document.addEventListener('keydown', function(e) {
+                // Tab键导航
+                if (e.key === 'Tab') {
+                    e.preventDefault();
+                    // 自定义Tab导航逻辑
+                    const focusableElements = document.querySelectorAll('input, textarea, button, .option-item');
+                    const currentIndex = Array.from(focusableElements).indexOf(document.activeElement);
+                    const nextIndex = e.shiftKey ? 
+                        (currentIndex - 1 + focusableElements.length) % focusableElements.length :
+                        (currentIndex + 1) % focusableElements.length;
+                    
+                    focusableElements[nextIndex].focus();
+                }
+                
+                // Enter键提交（在最后一个输入框时）
+                if (e.key === 'Enter' && document.activeElement === expansionInput) {
+                    document.querySelector('#submit-practice').click();
+                }
+            });
+
+            // 页面加载动画
+            const cards = document.querySelectorAll('.glass-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+    
+    <!-- 侧边栏开关按钮 -->
+    <button id="sidebar-toggle" class="fixed left-4 top-1/2 transform -translate-y-1/2 z-50 w-10 h-10 rounded-full glass-button flex items-center justify-center text-white shadow-lg">
+        <i class="fas fa-bars"></i>
+    </button>
+</body>
+</html>

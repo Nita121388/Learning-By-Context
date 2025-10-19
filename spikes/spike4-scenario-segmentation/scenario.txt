@@ -1,0 +1,728 @@
+$ powershell.exe -Command 'npx tsx spikes/spike4-scenario-segmentation/spike4.ts'
+total_blocks (8) 与 blocks 数量 (3) 不一致，已自动校正。
+情景分块结构化结果：
+{
+  "subtitle_title": "subtitle",
+  "segmentation_strategy": "根据剧情发展和场景转换划分，主要依据会议讨论、救援行动、调查追踪、最终对决等关键情节节点",
+  "total_blocks": 3,
+  "blocks": [
+    {
+      "block_index": 1,
+      "block_name": "反抗联盟会议",
+      "synopsis": "银河反抗联盟召开会议讨论刺杀格罗姆菲拉米特女王的计划，但计划混乱且刺客缺席",
+      "start_line": 1,
+      "end_line": 25,
+      "context_tags": [
+        "科幻政治",
+        "组织管理",
+        "军事行动"
+      ],
+      "exam_alignment": [
+        "听力理解-会议讨论",
+        "口语表达-观点阐述",
+        "阅读理解-科幻题材"
+      ],
+      "difficulty": "进阶",
+      "learning_focus": {
+        "vocabulary": "assassination；committee；intelligence；authentication",
+        "grammar": "虚拟语气；定语从句；现在完成时",
+        "listening": "会议对话理解；多人交谈识别",
+        "culture": "西方会议文化"
+      },
+      "dialogues": [
+        {
+          "order": 1,
+          "speaker": "Unknown",
+          "text": "All right, final item of the Galactic Defiance meeting.",
+          "emotion": "正式"
+        },
+        {
+          "order": 2,
+          "speaker": "Unknown",
+          "text": "Our plan to take out the Gromfilamite Queen.",
+          "emotion": "严肃"
+        },
+        {
+          "order": 3,
+          "speaker": "Unknown",
+          "text": "Quiet.",
+          "emotion": "命令"
+        },
+        {
+          "order": 4,
+          "speaker": "Unknown",
+          "text": "We could be in defiance without talking over each other.",
+          "emotion": "不满"
+        },
+        {
+          "order": 5,
+          "speaker": "Unknown",
+          "text": "Thank you, Corsica.",
+          "emotion": "礼貌"
+        },
+        {
+          "order": 6,
+          "speaker": "Unknown",
+          "text": "As it stands, our assassination task force has yet to provide a clear plan.",
+          "emotion": "失望"
+        },
+        {
+          "order": 7,
+          "speaker": "Unknown",
+          "text": "We provide lots of plans.",
+          "emotion": "辩解"
+        },
+        {
+          "order": 8,
+          "speaker": "Unknown",
+          "text": "Your committee keeps killing them.",
+          "emotion": "抱怨"
+        },
+        {
+          "order": 9,
+          "speaker": "Unknown",
+          "text": "Well, it's an assassination committee.",
+          "emotion": "讽刺"
+        },
+        {
+          "order": 10,
+          "speaker": "Unknown",
+          "text": "What do you want them to do?",
+          "emotion": "质问"
+        },
+        {
+          "order": 11,
+          "speaker": "Unknown",
+          "text": "All intelligence indicates that needs to be a surprise, which is why we need to plan it carefully.",
+          "emotion": "理性"
+        },
+        {
+          "order": 12,
+          "speaker": "Unknown",
+          "text": "Why don't we turn things over to our assassin, Beth Sanchez?",
+          "emotion": "建议"
+        },
+        {
+          "order": 13,
+          "speaker": "Unknown",
+          "text": "Great, it's an assassination meeting.",
+          "emotion": "讽刺"
+        },
+        {
+          "order": 14,
+          "speaker": "Unknown",
+          "text": "Where the hell is the assassin?",
+          "emotion": "愤怒"
+        },
+        {
+          "order": 15,
+          "speaker": "Unknown",
+          "text": "Assassinating.",
+          "emotion": "幽默"
+        },
+        {
+          "order": 16,
+          "speaker": "Unknown",
+          "text": "We're still in a meeting.",
+          "emotion": "无奈"
+        },
+        {
+          "order": 17,
+          "speaker": "Unknown",
+          "text": "We've been meeting about it for months.",
+          "emotion": "沮丧"
+        },
+        {
+          "order": 18,
+          "speaker": "Unknown",
+          "text": "It's a plan to kill her with old age.",
+          "emotion": "讽刺"
+        },
+        {
+          "order": 19,
+          "speaker": "Unknown",
+          "text": "There is no plan.",
+          "emotion": "直白"
+        },
+        {
+          "order": 20,
+          "speaker": "Unknown",
+          "text": "We still have to approve one.",
+          "emotion": "官僚"
+        },
+        {
+          "order": 21,
+          "speaker": "Unknown",
+          "text": "Do you even look at your defiantly?",
+          "emotion": "质问"
+        },
+        {
+          "order": 22,
+          "speaker": "Unknown",
+          "text": "Who has the patience for three factor authentication?",
+          "emotion": "抱怨"
+        },
+        {
+          "order": 23,
+          "speaker": "Unknown",
+          "text": "The defiance says hello.",
+          "emotion": "正式"
+        },
+        {
+          "order": 24,
+          "speaker": "Unknown",
+          "text": "Or goodbye?",
+          "emotion": "疑问"
+        },
+        {
+          "order": 25,
+          "speaker": "Unknown",
+          "text": "I mean, I guess the hello meant goodbye anyway, but this guy beat me to it.",
+          "emotion": "无奈"
+        }
+      ],
+      "follow_up_tasks": [
+        "练习会议场景的听力理解",
+        "学习军事政治相关词汇",
+        "分析多人对话中的语气变化"
+      ]
+    },
+    {
+      "block_index": 2,
+      "block_name": "贝丝求救与救援",
+      "synopsis": "贝丝任务失败后向父亲求救，瑞克前来救援并展现父女关系",
+      "start_line": 26,
+      "end_line": 56,
+      "context_tags": [
+        "家庭关系",
+        "太空冒险",
+        "紧急救援"
+      ],
+      "exam_alignment": [
+        "听力理解-电话对话",
+        "口语表达-情感交流",
+        "写作-叙事描写"
+      ],
+      "difficulty": "入门",
+      "learning_focus": {
+        "vocabulary": "assassin；extraction；emergency；coordinates",
+        "grammar": "过去时态；祈使句；简单句结构",
+        "listening": "紧急对话识别；情感语调理解"
+      },
+      "dialogues": [
+        {
+          "order": 26,
+          "speaker": "Unknown",
+          "text": "Oh my God, who are you?",
+          "emotion": "惊讶"
+        },
+        {
+          "order": 27,
+          "speaker": "Unknown",
+          "text": "An assassin?",
+          "emotion": "疑问"
+        },
+        {
+          "order": 28,
+          "speaker": "Unknown",
+          "text": "I mean, I wish.",
+          "emotion": "失望"
+        },
+        {
+          "order": 29,
+          "speaker": "Unknown",
+          "text": "Kill her.",
+          "emotion": "命令"
+        },
+        {
+          "order": 30,
+          "speaker": "Unknown",
+          "text": "Time to go.",
+          "emotion": "紧急"
+        },
+        {
+          "order": 31,
+          "speaker": "Unknown",
+          "text": "Oh shit.",
+          "emotion": "惊慌"
+        },
+        {
+          "order": 32,
+          "speaker": "Beth",
+          "text": "Hey, good news, the Queen is dead.",
+          "emotion": "报告"
+        },
+        {
+          "order": 33,
+          "speaker": "Beth",
+          "text": "Bad news, I didn't do it.",
+          "emotion": "尴尬"
+        },
+        {
+          "order": 34,
+          "speaker": "Beth",
+          "text": "Worse news, I need a lift.",
+          "emotion": "请求"
+        },
+        {
+          "order": 35,
+          "speaker": "Unknown",
+          "text": "I can't approve an extraction from an unapproved assassination.",
+          "emotion": "官僚"
+        },
+        {
+          "order": 36,
+          "speaker": "Unknown",
+          "text": "I'll have to call an emergency meeting.",
+          "emotion": "程序化"
+        },
+        {
+          "order": 37,
+          "speaker": "Beth",
+          "text": "I'm going to die.",
+          "emotion": "绝望"
+        },
+        {
+          "order": 38,
+          "speaker": "Rick",
+          "text": "Chicken or restaurant?",
+          "emotion": "随意"
+        },
+        {
+          "order": 39,
+          "speaker": "Rick",
+          "text": "You beat out Luigi's.",
+          "emotion": "幽默"
+        },
+        {
+          "order": 40,
+          "speaker": "Rick",
+          "text": "I'm hammering sushi.",
+          "emotion": "轻松"
+        },
+        {
+          "order": 41,
+          "speaker": "Beth",
+          "text": "What's up?",
+          "emotion": "疑问"
+        },
+        {
+          "order": 42,
+          "speaker": "Beth",
+          "text": "Story.",
+          "emotion": "简短"
+        },
+        {
+          "order": 43,
+          "speaker": "Beth",
+          "text": "Or maybe not that funny.",
+          "emotion": "自嘲"
+        },
+        {
+          "order": 44,
+          "speaker": "Rick",
+          "text": "Are you pitching a Hulu original?",
+          "emotion": "调侃"
+        },
+        {
+          "order": 45,
+          "speaker": "Beth",
+          "text": "I I kind of went rogue and I'm trapped on a grump on my chip.",
+          "emotion": "解释"
+        },
+        {
+          "order": 46,
+          "speaker": "Rick",
+          "text": "Send the coordinates, I'll pick you up.",
+          "emotion": "果断"
+        },
+        {
+          "order": 47,
+          "speaker": "Beth",
+          "text": "Really.",
+          "emotion": "惊讶"
+        },
+        {
+          "order": 48,
+          "speaker": "Beth",
+          "text": "Just like that.",
+          "emotion": "难以置信"
+        },
+        {
+          "order": 49,
+          "speaker": "Rick",
+          "text": "Of course, just like that.",
+          "emotion": "理所当然"
+        },
+        {
+          "order": 50,
+          "speaker": "Rick",
+          "text": "You're my daughter.",
+          "emotion": "温情"
+        },
+        {
+          "order": 51,
+          "speaker": "Rick",
+          "text": "Probably Jiro.",
+          "emotion": "随意"
+        },
+        {
+          "order": 52,
+          "speaker": "Rick",
+          "text": "Lava cake to go.",
+          "emotion": "日常"
+        },
+        {
+          "order": 53,
+          "speaker": "Rick",
+          "text": "The lava cake was already ordered.",
+          "emotion": "解释"
+        },
+        {
+          "order": 54,
+          "speaker": "Rick",
+          "text": "I can see it from here.",
+          "emotion": "观察"
+        },
+        {
+          "order": 55,
+          "speaker": "Rick",
+          "text": "You don't have to explain.",
+          "emotion": "理解"
+        },
+        {
+          "order": 56,
+          "speaker": "Rick",
+          "text": "You're thinking it'd be easy to scan the only warm blooded thing on the ship?",
+          "emotion": "反问"
+        }
+      ],
+      "follow_up_tasks": [
+        "练习紧急情况下的对话表达",
+        "分析父女对话中的情感变化",
+        "学习救援相关词汇"
+      ]
+    },
+    {
+      "block_index": 3,
+      "block_name": "返回反抗联盟基地",
+      "synopsis": "瑞克和贝丝返回基地，面对同事的质疑和批评，瑞克为女儿辩护",
+      "start_line": 57,
+      "end_line": 125,
+      "context_tags": [
+        "职场冲突",
+        "家庭代际",
+        "组织文化"
+      ],
+      "exam_alignment": [
+        "听力理解-职场对话",
+        "口语表达-辩论技巧",
+        "阅读理解-冲突解决"
+      ],
+      "difficulty": "进阶",
+      "learning_focus": {
+        "vocabulary": "resent；discourage；talent；organization",
+        "grammar": "比较级；条件句；复杂句结构",
+        "listening": "辩论对话理解；情感强度识别"
+      },
+      "dialogues": [
+        {
+          "order": 57,
+          "speaker": "Rick",
+          "text": "We tried that once.",
+          "emotion": "经验"
+        },
+        {
+          "order": 58,
+          "speaker": "Rick",
+          "text": "A lot of rats in the walls.",
+          "emotion": "幽默"
+        },
+        {
+          "order": 59,
+          "speaker": "Beth",
+          "text": "Is that why the ship always has a bee in the window?",
+          "emotion": "疑问"
+        },
+        {
+          "order": 60,
+          "speaker": "Rick",
+          "text": "Hey, freeze you first.",
+          "emotion": "警告"
+        },
+        {
+          "order": 61,
+          "speaker": "Rick",
+          "text": "Walk right into it.",
+          "emotion": "得意"
+        },
+        {
+          "order": 62,
+          "speaker": "Rick",
+          "text": "Wow, Beth, you've been staying busy.",
+          "emotion": "赞赏"
+        },
+        {
+          "order": 63,
+          "speaker": "Beth",
+          "text": "Oh shit, it's Rick Sanchez.",
+          "emotion": "惊讶"
+        },
+        {
+          "order": 64,
+          "speaker": "Rick",
+          "text": "My daughter is just as dangerous.",
+          "emotion": "自豪"
+        },
+        {
+          "order": 65,
+          "speaker": "Rick",
+          "text": "Wait for the gun also shoots a sign.",
+          "emotion": "解释"
+        },
+        {
+          "order": 66,
+          "speaker": "Rick",
+          "text": "Yeah, for clarity, so people know it's quicksand and not a brown portal or diarrhea.",
+          "emotion": "详细说明"
+        },
+        {
+          "order": 67,
+          "speaker": "Beth",
+          "text": "But doesn't the sign tip off the enemy?",
+          "emotion": "质疑"
+        },
+        {
+          "order": 68,
+          "speaker": "Rick",
+          "text": "No, no, no, the other side says ordinary sand.",
+          "emotion": "狡黠"
+        },
+        {
+          "order": 69,
+          "speaker": "Rick",
+          "text": "There she is.",
+          "emotion": "发现"
+        },
+        {
+          "order": 70,
+          "speaker": "Rick",
+          "text": "See, there's your classic diarrhea.",
+          "emotion": "幽默"
+        },
+        {
+          "order": 71,
+          "speaker": "Beth",
+          "text": "Whatever.",
+          "emotion": "不耐烦"
+        },
+        {
+          "order": 72,
+          "speaker": "Beth",
+          "text": "Can we go now?",
+          "emotion": "急切"
+        },
+        {
+          "order": 73,
+          "speaker": "Beth",
+          "text": "Just portal me to HQ.",
+          "emotion": "请求"
+        },
+        {
+          "order": 74,
+          "speaker": "Beth",
+          "text": "Actually, could you portal me like a block away so they don't know your dad drove you?",
+          "emotion": "尴尬"
+        },
+        {
+          "order": 75,
+          "speaker": "Rick",
+          "text": "Sure.",
+          "emotion": "同意"
+        },
+        {
+          "order": 76,
+          "speaker": "Rick",
+          "text": "OK.",
+          "emotion": "简短"
+        },
+        {
+          "order": 77,
+          "speaker": "Unknown",
+          "text": "All in favor of Natalie thumbnailing an emergency rescue budget.",
+          "emotion": "正式"
+        },
+        {
+          "order": 78,
+          "speaker": "Unknown",
+          "text": "Oh.",
+          "emotion": "惊讶"
+        },
+        {
+          "order": 79,
+          "speaker": "Beth",
+          "text": "You're a prick.",
+          "emotion": "愤怒"
+        },
+        {
+          "order": 80,
+          "speaker": "Rick",
+          "text": "Stop acting embarrassed.",
+          "emotion": "直接"
+        },
+        {
+          "order": 81,
+          "speaker": "Rick",
+          "text": "I'm a legend here.",
+          "emotion": "自豪"
+        },
+        {
+          "order": 82,
+          "speaker": "Unknown",
+          "text": "Ohh.",
+          "emotion": "感叹"
+        },
+        {
+          "order": 83,
+          "speaker": "Rick",
+          "text": "Hey, Began.",
+          "emotion": "打招呼"
+        },
+        {
+          "order": 84,
+          "speaker": "Unknown",
+          "text": "Hey, Rick.",
+          "emotion": "回应"
+        },
+        {
+          "order": 85,
+          "speaker": "Unknown",
+          "text": "Yes.",
+          "emotion": "确认"
+        },
+        {
+          "order": 86,
+          "speaker": "Unknown",
+          "text": "It's disappointing that the legend doesn't fall far from the tree.",
+          "emotion": "讽刺"
+        },
+        {
+          "order": 87,
+          "speaker": "Beth",
+          "text": "Huh?",
+          "emotion": "困惑"
+        },
+        {
+          "order": 88,
+          "speaker": "Rick",
+          "text": "That's a weird way to thank her and apologize.",
+          "emotion": "不满"
+        },
+        {
+          "order": 89,
+          "speaker": "Unknown",
+          "text": "Thank her for what?",
+          "emotion": "质疑"
+        },
+        {
+          "order": 90,
+          "speaker": "Unknown",
+          "text": "A botched assassination?",
+          "emotion": "嘲讽"
+        },
+        {
+          "order": 91,
+          "speaker": "Beth",
+          "text": "Whoa, whoa.",
+          "emotion": "制止"
+        },
+        {
+          "order": 92,
+          "speaker": "Beth",
+          "text": "I don't botch shit.",
+          "emotion": "愤怒"
+        },
+        {
+          "order": 93,
+          "speaker": "Beth",
+          "text": "I just turned down sloppy seconds.",
+          "emotion": "辩解"
+        },
+        {
+          "order": 94,
+          "speaker": "Beth",
+          "text": "Yeah.",
+          "emotion": "确认"
+        },
+        {
+          "order": 95,
+          "speaker": "Beth",
+          "text": "Their mothership wasn't on red alert for her birthday.",
+          "emotion": "解释"
+        },
+        {
+          "order": 96,
+          "speaker": "Unknown",
+          "text": "You sure about that?",
+          "emotion": "怀疑"
+        },
+        {
+          "order": 97,
+          "speaker": "Beth",
+          "text": "Red alert for the Queen's Birthday?",
+          "emotion": "反问"
+        },
+        {
+          "order": 98,
+          "speaker": "Beth",
+          "text": "That's right.",
+          "emotion": "肯定"
+        },
+        {
+          "order": 99,
+          "speaker": "Beth",
+          "text": "Her Majesty is 70 days young but still laying eggs.",
+          "emotion": "描述"
+        },
+        {
+          "order": 100,
+          "speaker": "Beth",
+          "text": "Banging drones You go girl.",
+          "emotion": "调侃"
+        },
+        {
+          "order": 101,
+          "speaker": "Beth",
+          "text": "Yes, Queen, no.",
+          "emotion": "矛盾"
+        },
+        {
+          "order": 102,
+          "speaker": "Beth",
+          "text": "I saw that bitches pillow through her face.",
+          "emotion": "生动描述"
+        },
+        {
+          "order": 103,
+          "speaker": "Beth",
+          "text": "A sting trooper did it.",
+          "emotion": "指认"
+        },
+        {
+          "order": 104,
+          "speaker": "Beth",
+          "text": "Why didn't they pin it on us?",
+          "emotion": "疑问"
+        }
+      ],
+      "follow_up_tasks": []
+    }
+  ]
+}
+Token 统计： {
+  inputTokens: 4770,
+  outputTokens: 4096,
+  totalTokens: 8866,
+  reasoningTokens: undefined,
+  cachedInputTokens: 4736
+}
